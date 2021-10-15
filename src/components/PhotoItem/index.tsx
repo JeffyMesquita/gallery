@@ -5,12 +5,12 @@ type Props = {
   name: string;
 }
 
-const PhotoItem = ({ url, name }: Props) => {
+export const PhotoItem = ({ url, name }: Props) => {
   return(
     <Container>
-      ...
+      <img src={url} alt={name} />
+      {name}
     </Container>
   );
 };
 
-export default PhotoItem;

@@ -1,10 +1,18 @@
-import { useState, useEffect } from 'react';
-import { Container, Area, Header, ScreenWarning, PhotoList } from './App.styles';
+import { useState, useEffect, FormEvent } from 'react';
+import { 
+  Container, 
+  Area, 
+  Header, 
+  ScreenWarning, 
+  PhotoList, 
+  UploadForm, 
+} from './App.styles';
 import * as Photos from './services/photos';
 import { Photo } from './types/Photo';
 import { PhotoItem } from './components/PhotoItem';
 
 const App = () => {
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [photos, setPhotos] = useState<Photo[]>([]);
 
@@ -17,6 +25,27 @@ const App = () => {
     getPhotos();
   }, [])
 
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const file = formData.get('image') as File;
+
+    if(file && file.size > 0) {
+      setUploading(true);      
+      let result = await Photos.insert(file);
+      setUploading(false);
+
+      if(result instanceof Error) {
+        alert(`${result.name} - ${result.message}`);
+      } else {
+        let newPhotoList = [...photos, result];
+        newPhotoList.push(result);
+        setPhotos(newPhotoList);
+      }
+    }
+  }
+
   return(
     <Container>
       <Area>
@@ -24,7 +53,10 @@ const App = () => {
           Galeria de Fotos
         </Header>
 
-        {/* Area de upload */}
+        <UploadForm method="POST" onSubmit={handleFormSubmit}>
+          <input type="file" name="image" />
+          <input type="submit"value="Enviar" />
+        </UploadForm>
 
         {loading && 
           <ScreenWarning>
