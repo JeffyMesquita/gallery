@@ -25,10 +25,10 @@ const App = () => {
     getPhotos();
   }, [])
 
-  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(e.currentTarget);
     const file = formData.get('image') as File;
 
     if(file && file.size > 0) {
@@ -56,6 +56,7 @@ const App = () => {
         <UploadForm method="POST" onSubmit={handleFormSubmit}>
           <input type="file" name="image" />
           <input type="submit"value="Enviar" />
+          {uploading && 'Enviando...'}
         </UploadForm>
 
         {loading && 
