@@ -1,93 +1,86 @@
-import { useState, useEffect, FormEvent } from 'react';
-import { 
-  Container, 
-  Area, 
-  Header, 
-  ScreenWarning, 
-  PhotoList, 
-  UploadForm, 
-} from './App.styles';
-import * as Photos from './services/photos';
-import { Photo } from './types/Photo';
-import { PhotoItem } from './components/PhotoItem';
+import { FormEvent, useEffect, useState } from "react";
+import { Area, Container, Header, PhotoList, ScreenWarning, UploadForm } from "./App.styles";
+import { PhotoItem } from "./components/PhotoItem";
+import { getAll, insert } from "./services/photos";
+import { Photo } from "./types/Photo";
 
-const App = () => {
-  const [uploading, setUploading] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [photos, setPhotos] = useState<Photo[]>([]);
+export const App = () => {
+
+  const [ loading, setLoading ] = useState(false);
+  const [ uploading, setUploading ] = useState(false);
+  const [ photos, setPhotos ] = useState<Photo[]>([]);
 
   useEffect(() => {
     const getPhotos = async () => {
       setLoading(true);
-      setPhotos(await Photos.getAll());
+      setPhotos(await getAll());
       setLoading(false);
     }
+
     getPhotos();
-  }, [])
+  }, []);
 
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
+  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    
+    const formData = new FormData(event.currentTarget);
     const file = formData.get('image') as File;
 
-    if(file && file.size > 0) {
-      setUploading(true);      
-      let result = await Photos.insert(file);
+    if (file && file.size) {
+      setUploading(true);
+
+      let result = await insert(file);
+
       setUploading(false);
 
-      if(result instanceof Error) {
-        alert(`${result.name} - ${result.message}`);
-      } else {
-        let newPhotoList = [...photos, result];
-        newPhotoList.push(result);
-        setPhotos(newPhotoList);
+      if (result instanceof Error) {
+        alert(result.message);
+        return;
       }
+
+      setPhotos([...photos, result]);
     }
   }
-
-  return(
+  
+  return (
     <Container>
       <Area>
-        <Header>
-          Galeria de Fotos
-        </Header>
+        <Header>Galeria de Fotos</Header>
 
-        <UploadForm method="POST" onSubmit={handleFormSubmit}>
-          <input type="file" name="image" />
-          <input type="submit"value="Enviar" />
-          {uploading && 'Enviando...'}
+        <UploadForm method="POST" onSubmit={ handleFormSubmit }>
+          <input type="file" name="image" id="image" />
+          <input type="submit" value="Enviar" />
+
+          { uploading && 'Enviando...' }
         </UploadForm>
 
-        {loading && 
+        {
+          loading &&
           <ScreenWarning>
-            <div className="emoji">✋</div>
+            <div className="emoji">🤚</div>
             <div>Carregando...</div>
           </ScreenWarning>
         }
 
-        {!loading && photos.length > 0 &&
+        {
+          !loading && photos.length > 0 &&
           <PhotoList>
-            {photos.map((item, index)=> (
-              <PhotoItem 
-                key={index} 
-                url={item.url}
-                name={item.name}
-              />
-            ))}
+            {
+              photos.map((item, index) => (
+                <PhotoItem key={ index } url={ item.url } name={ item.name } />
+              ))
+            }
           </PhotoList>
         }
 
-        {!loading && photos.length === 0 && 
+        {
+          !loading && photos.length === 0 &&
           <ScreenWarning>
-          <div className="emoji">😢</div>
-          <div>Nao ha fotos cadastradas</div>
-        </ScreenWarning>
+            <div className="emoji">😞</div>
+            <div>Não há fotos cadastradas</div>
+          </ScreenWarning>
         }
-
       </Area>
     </Container>
   );
-};
-
-export default App;
+}
