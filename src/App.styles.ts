@@ -34,7 +34,7 @@ export const PhotoList = styled.div`
   gap: 10px;
 `;
 
-export const UploadForm = styled.div`
+export const UploadForm = styled.form`
   background-color: #3D3F43;
   padding: 15px;
   border-radius: 10px;

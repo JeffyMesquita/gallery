@@ -4,7 +4,7 @@ import { PhotoItem } from "./components/PhotoItem";
 import { getAll, insert } from "./services/photos";
 import { Photo } from "./types/Photo";
 
-export const App = () => {
+export function App () {
 
   const [ loading, setLoading ] = useState(false);
   const [ uploading, setUploading ] = useState(false);
@@ -20,10 +20,10 @@ export const App = () => {
     getPhotos();
   }, []);
 
-  const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(e.currentTarget);
     const file = formData.get('image') as File;
 
     if (file && file.size) {
@@ -84,3 +84,4 @@ export const App = () => {
     </Container>
   );
 }
+
