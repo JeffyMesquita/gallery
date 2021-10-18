@@ -29,6 +29,7 @@ export const ScreenWarning = styled.div`
 `;
 
 export const PhotoList = styled.div`
+  margin: 0 15px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
@@ -37,6 +38,7 @@ export const PhotoList = styled.div`
 export const UploadForm = styled.form`
   background-color: #3D3F43;
   padding: 15px;
+  margin: 0 15px;
   border-radius: 10px;
   margin-bottom: 30px;
 
